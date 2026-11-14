@@ -9,6 +9,8 @@ struct AirDropDevice: Identifiable {
 
 class AirDropScanner: NSObject, ObservableObject, CBCentralManagerDelegate {
     @Published var devices: [AirDropDevice] = []
+    @Published var statusText: String = "Đang khởi tạo Bluetooth..."
+    
     private var centralManager: CBCentralManager!
     
     override init() {
@@ -18,7 +20,23 @@ class AirDropScanner: NSObject, ObservableObject, CBCentralManagerDelegate {
     
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         if central.state == .poweredOn {
-            centralManager.scanForPeripherals(withServices: nil, options: [CBCentralManagerScanOptionAllowDuplicatesKey: true])
+            statusText = "Đang quét AirDrop quanh đây..."
+            // Quét trực tiếp vào UUID của AirDrop
+            centralManager.scanForPeripherals(withServices: [CBUUID(string: "FE9F")], options: [CBCentralManagerScanOptionAllowDuplicatesKey: true])
+            
+            // Nếu 3 giây không thấy gì, quét diện rộng (fallback)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                if self.devices.isEmpty {
+                    self.statusText = "Quét diện rộng (Fallback)..."
+                    self.centralManager.scanForPeripherals(withServices: nil, options: [CBCentralManagerScanOptionAllowDuplicatesKey: true])
+                }
+            }
+        } else if central.state == .unauthorized {
+            statusText = "LỖI: Chưa cấp quyền Bluetooth!"
+        } else if central.state == .poweredOff {
+            statusText = "LỖI: Bluetooth đang TẮT trên máy mày!"
+        } else {
+            statusText = "Lỗi trạng thái BLE: \(central.state.rawValue)"
         }
     }
     
@@ -38,6 +56,7 @@ class AirDropScanner: NSObject, ObservableObject, CBCentralManagerDelegate {
             }
         }
         
+        // Nếu không phải AirDrop chuẩn nhưng đang trong chế độ fallback, vẫn hiện (tuỳ chọn)
         if isAirDrop {
             if foundName == nil || foundName!.isEmpty {
                 foundName = "AirDrop Device"
