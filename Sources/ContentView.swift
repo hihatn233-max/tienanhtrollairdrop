@@ -1,36 +1,68 @@
 import SwiftUI
 
 struct ContentView: View {
-    @StateObject private var ble = BLESpammer()
-    @StateObject private var nearby = NearbyBlast()
-    @State private var running = false
-
+    @StateObject private var scanner = AirDropScanner()
+    @StateObject private var spammer = TrollSpammer()
+    @State private var selectedDevice: UUID?
+    
     var body: some View {
-        VStack(spacing: 20) {
-            Text("Blast")
-                .font(.largeTitle)
-                .bold()
-                .padding(.top, 40)
-            
-            // Hiển thị trạng thái (Đang phát / Bị chặn quyền / Tắt BLE)
-            Text(ble.status)
-                .font(.subheadline)
-                .foregroundColor(ble.status.contains("Lỗi") ? .red : .green)
-                .padding(.bottom, 20)
-            
-            Button(running ? "STOP" : "START") {
-                running.toggle()
-                if running { 
-                    ble.start()
-                    nearby.start() 
-                } else { 
-                    ble.stop()
-                    nearby.stop()
+        NavigationView {
+            List(scanner.devices) { device in
+                HStack {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(device.name)
+                            .font(.headline)
+                        Text("Tín hiệu: \(device.rssi) dBm")
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                    }
+                    Spacer()
+                    
+                    Button(action: {
+                        if spammer.isSpamming && selectedDevice == device.id {
+                            spammer.stopSpam()
+                            selectedDevice = nil
+                        } else {
+                            selectedDevice = device.id
+                            spammer.startSpam()
+                        }
+                    }) {
+                        Text(spammer.isSpamming && selectedDevice == device.id ? "STOP" : "TROLL")
+                            .font(.system(size: 14, weight: .bold))
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
+                            .background(spammer.isSpamming && selectedDevice == device.id ? Color.red : Color.blue)
+                            .cornerRadius(8)
+                    }
+                    .buttonStyle(.borderless)
                 }
             }
-            .buttonStyle(.borderedProminent)
-            .controlSize(.large)
+            .navigationTitle("AirDrop Troll")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(spammer.isSpamming && selectedDevice == nil ? "Stop" : "Blast All") {
+                        if spammer.isSpamming && selectedDevice == nil {
+                            spammer.stopSpam()
+                        } else {
+                            selectedDevice = nil
+                            spammer.startSpam()
+                        }
+                    }
+                    .foregroundColor(spammer.isSpamming && selectedDevice == nil ? .red : .blue)
+                }
+            }
+            .overlay(
+                Group {
+                    if scanner.devices.isEmpty {
+                        VStack(spacing: 10) {
+                            ProgressView()
+                            Text("Đang quét AirDrop quanh đây...")
+                                .foregroundColor(.gray)
+                        }
+                    }
+                }
+            )
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
