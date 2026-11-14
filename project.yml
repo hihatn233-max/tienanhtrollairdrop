@@ -1,0 +1,32 @@
+name: Blast
+options:
+  bundleIdPrefix: com.olivia
+  deploymentTarget:
+    iOS: "15.0"
+settings:
+  base:
+    CODE_SIGNING_ALLOWED: NO
+    CODE_SIGNING_REQUIRED: NO
+    CODE_SIGN_IDENTITY: ""
+targets:
+  Blast:
+    type: application
+    platform: iOS
+    sources:
+      - Sources
+    info:
+      path: Info.plist
+      properties:
+        CFBundleDisplayName: Blast
+        UILaunchScreen: {}
+        NSBluetoothAlwaysUsageDescription: BLE scan and advertise
+        NSBluetoothPeripheralUsageDescription: BLE advertise
+        NSLocalNetworkUsageDescription: Nearby device discovery
+        NSBonjourServices:
+          - _blast-inv._tcp
+          - _blast-inv._udp
+        UIBackgroundModes:
+          - bluetooth-central
+          - bluetooth-peripheral
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
