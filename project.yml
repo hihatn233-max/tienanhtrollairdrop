@@ -2,7 +2,7 @@ name: Blast
 options:
   bundleIdPrefix: com.olivia
   deploymentTarget:
-    iOS: "15.0" # <--- Hạ về 15.0 cho máy mày
+    iOS: "15.0" # <--- Sửa lại thành 15.0 cho đúng máy mày
 settings:
   base:
     CODE_SIGNING_ALLOWED: NO
