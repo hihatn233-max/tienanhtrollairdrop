@@ -2,7 +2,7 @@ name: Blast
 options:
   bundleIdPrefix: com.olivia
   deploymentTarget:
-    iOS: "15.0" # <--- Sửa lại thành 15.0 cho đúng máy mày
+    iOS: "15.0"
 settings:
   base:
     CODE_SIGNING_ALLOWED: NO
@@ -15,7 +15,7 @@ targets:
     sources:
       - Sources
     resources:
-      - bg.jpg 
+      - path: bg.jpg
     info:
       path: Info.plist
       properties:
