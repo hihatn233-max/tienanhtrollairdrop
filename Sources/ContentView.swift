@@ -12,6 +12,12 @@ struct ContentView: View {
                 .bold()
                 .padding(.top, 40)
             
+            // Hiển thị trạng thái (Đang phát / Bị chặn quyền / Tắt BLE)
+            Text(ble.status)
+                .font(.subheadline)
+                .foregroundColor(ble.status.contains("Lỗi") ? .red : .green)
+                .padding(.bottom, 20)
+            
             Button(running ? "STOP" : "START") {
                 running.toggle()
                 if running { 
