@@ -5,19 +5,33 @@ struct ContentView: View {
     @StateObject private var spammer = TrollSpammer()
     @State private var selectedDevice: UUID?
     
+    init() {
+        // Xoá nền trắng mặc định của List trên iOS 15
+        UITableView.appearance().backgroundColor = .clear
+    }
+    
     var body: some View {
         NavigationView {
             ZStack {
-                // 1. Ảnh nền
-                Image("bg")
-                    .resizable()
-                    .scaledToFill()
-                    .ignoresSafeArea()
+                // Load ảnh trực tiếp từ Bundle, nếu lỗi sẽ hiện màu đỏ
+                if let path = Bundle.main.path(forResource: "bg", ofType: "jpg"),
+                   let uiImage = UIImage(contentsOfFile: path) {
+                    Image(uiImage: uiImage)
+                        .resizable()
+                        .scaledToFill()
+                        .ignoresSafeArea()
+                } else {
+                    Color.red.ignoresSafeArea()
+                    Text("LỖI: Không tìm thấy file bg.jpg trong app!")
+                        .foregroundColor(.white)
+                        .font(.headline)
+                        .multilineTextAlignment(.center)
+                        .padding()
+                }
                 
-                // 2. Lớp phủ đen mờ
-                Color.black.opacity(0.65).ignoresSafeArea()
+                // Lớp phủ đen mờ
+                Color.black.opacity(0.6).ignoresSafeArea()
                 
-                // 3. Danh sách
                 List(scanner.devices) { device in
                     HStack {
                         VStack(alignment: .leading, spacing: 4) {
@@ -49,15 +63,9 @@ struct ContentView: View {
                         }
                         .buttonStyle(.borderless)
                     }
-                    // Dùng .listRowBackground(Color.clear) cho iOS 15
                     .listRowBackground(Color.clear)
                 }
                 .listStyle(.plain)
-                // iOS 15 chưa có .scrollContentBackground(.hidden), nên phải dùng cách trick này:
-                .onAppear {
-                    UITableView.appearance().backgroundColor = .clear
-                }
-                
             }
             .navigationTitle("TienAnh")
             .navigationBarTitleDisplayMode(.inline)
@@ -81,7 +89,8 @@ struct ContentView: View {
                         VStack(spacing: 10) {
                             ProgressView()
                                 .tint(.white)
-                            Text("Đang quét AirDrop quanh đây...")
+                            // Hiển thị trạng thái quét (Đang quét / Bị tắt bluetooth / Chưa cấp quyền)
+                            Text(scanner.statusText)
                                 .foregroundColor(.white)
                                 .font(.subheadline)
                         }
