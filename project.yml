@@ -14,8 +14,6 @@ targets:
     platform: iOS
     sources:
       - Sources
-    resources:
-      - path: bg.jpg
     info:
       path: Info.plist
       properties:
