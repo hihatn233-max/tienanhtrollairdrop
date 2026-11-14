@@ -5,17 +5,17 @@ struct ContentView: View {
     
     var body: some View {
         ZStack {
-            // Ảnh nền nhúng Base64 (Đéo cần file ngoài)
-            if let uiImage = UIImage(data: Data(base64Encoded: getBgBase64(), options: .ignoreUnknownCharacters)!) {
-                Image(uiImage: uiImage)
+            // Tải ảnh nền từ URL (Chuẩn iOS 15)
+            AsyncImage(url: URL(string: "https://i.ibb.co/YFW4xJDQ/IMG-0434.jpg")) { image in
+                image
                     .resizable()
                     .scaledToFill()
                     .ignoresSafeArea()
-            } else {
+            } placeholder: {
                 Color.black.ignoresSafeArea()
             }
             
-            // Lớp phủ đen
+            // Lớp phủ đen mờ
             Color.black.opacity(0.6).ignoresSafeArea()
             
             VStack(spacing: 30) {
@@ -27,6 +27,7 @@ struct ContentView: View {
                     .font(.headline)
                     .foregroundColor(spammer.isSpamming ? .green : .gray)
                 
+                // Nút bấm khổng lồ
                 Button(action: {
                     if spammer.isSpamming {
                         spammer.stopSpam()
@@ -49,9 +50,5 @@ struct ContentView: View {
                 .buttonStyle(PlainButtonStyle())
             }
         }
-    }
-    
-    func getBgBase64() -> String {
-        return "/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAf/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCwABmX/9k="
     }
 }
