@@ -1,12 +1,7 @@
-// Sources/NearbyBlast.swift
-// Cần Info.plist:
-// NSLocalNetworkUsageDescription = "Nearby device discovery"
-// NSBonjourServices = ["_blast-inv._tcp", "_blast-inv._udp"]
-
 import Foundation
 import MultipeerConnectivity
 
-final class NearbyBlast: NSObject, MCNearbyServiceAdvertiserDelegate {
+final class NearbyBlast: NSObject, ObservableObject, MCNearbyServiceAdvertiserDelegate {
     private let serviceType = "blast-inv"
     private var advertiser: MCNearbyServiceAdvertiser!
     private var sessions: [MCSession] = []
@@ -28,7 +23,6 @@ final class NearbyBlast: NSObject, MCNearbyServiceAdvertiserDelegate {
                     didReceiveInvitationFromPeer peerID: MCPeerID,
                     withContext context: Data?,
                     invitationHandler: @escaping (Bool, MCSession?) -> Void) {
-        // chấp nhận và mở session — payload tuỳ mày gắn vào
         let session = MCSession(peer: advertiser.myPeerID, securityIdentity: nil, encryptionPreference: .none)
         sessions.append(session)
         invitationHandler(true, session)
