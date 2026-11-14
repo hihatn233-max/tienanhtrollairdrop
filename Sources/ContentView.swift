@@ -5,10 +5,15 @@ struct ContentView: View {
     @StateObject private var spammer = TrollSpammer()
     @State private var selectedDevice: UUID?
     
+    init() {
+        // Ép List nền trong suốt trên iOS 15
+        UITableView.appearance().backgroundColor = .clear
+    }
+    
     var body: some View {
         NavigationView {
             ZStack {
-                // Ảnh nền nhúng sẵn
+                // Ảnh nền
                 Image("bg")
                     .resizable()
                     .scaledToFill()
@@ -17,6 +22,7 @@ struct ContentView: View {
                 // Lớp phủ đen mờ
                 Color.black.opacity(0.65).ignoresSafeArea()
                 
+                // Danh sách thiết bị
                 List(scanner.devices) { device in
                     HStack {
                         VStack(alignment: .leading, spacing: 4) {
@@ -48,16 +54,13 @@ struct ContentView: View {
                         }
                         .buttonStyle(.borderless)
                     }
+                    // Làm trong suốt row
                     .listRowBackground(Color.clear)
                 }
                 .listStyle(.plain)
-                .scrollContentBackground(.hidden)
             }
             .navigationTitle("TienAnh")
             .navigationBarTitleDisplayMode(.inline)
-            .toolbarBackground(.visible, for: .navigationBar)
-            .toolbarBackground(Color.black.opacity(0.8), for: .navigationBar)
-            .toolbarColorScheme(.dark, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(spammer.isSpamming && selectedDevice == nil ? "Stop" : "Blast All") {
