@@ -5,24 +5,19 @@ struct ContentView: View {
     @StateObject private var spammer = TrollSpammer()
     @State private var selectedDevice: UUID?
     
-    init() {
-        // Ép List nền trong suốt trên iOS 15
-        UITableView.appearance().backgroundColor = .clear
-    }
-    
     var body: some View {
         NavigationView {
             ZStack {
-                // Ảnh nền
+                // 1. Ảnh nền
                 Image("bg")
                     .resizable()
                     .scaledToFill()
                     .ignoresSafeArea()
                 
-                // Lớp phủ đen mờ
+                // 2. Lớp phủ đen mờ
                 Color.black.opacity(0.65).ignoresSafeArea()
                 
-                // Danh sách thiết bị
+                // 3. Danh sách
                 List(scanner.devices) { device in
                     HStack {
                         VStack(alignment: .leading, spacing: 4) {
@@ -54,10 +49,15 @@ struct ContentView: View {
                         }
                         .buttonStyle(.borderless)
                     }
-                    // Làm trong suốt row
+                    // Dùng .listRowBackground(Color.clear) cho iOS 15
                     .listRowBackground(Color.clear)
                 }
                 .listStyle(.plain)
+                // iOS 15 chưa có .scrollContentBackground(.hidden), nên phải dùng cách trick này:
+                .onAppear {
+                    UITableView.appearance().backgroundColor = .clear
+                }
+                
             }
             .navigationTitle("TienAnh")
             .navigationBarTitleDisplayMode(.inline)
