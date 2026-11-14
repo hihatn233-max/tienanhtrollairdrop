@@ -6,9 +6,13 @@ on:
 
 jobs:
   build:
-    runs-on: macos-14
+    # Dùng macos-latest để tránh hoàn toàn lỗi provisioning arm64 của macos-14
+    runs-on: macos-latest 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_15.4.app
 
       - name: Install XcodeGen
         run: brew install xcodegen
@@ -29,6 +33,7 @@ jobs:
           mkdir -p build/Payload
           cp -R build/Blast.xcarchive/Products/Applications/Blast.app build/Payload/
           cd build && zip -r Blast.ipa Payload
+          ls -lh Blast.ipa
 
       - uses: actions/upload-artifact@v4
         with:
