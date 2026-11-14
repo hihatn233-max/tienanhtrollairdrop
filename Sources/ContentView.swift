@@ -6,30 +6,32 @@ struct ContentView: View {
     @State private var selectedDevice: UUID?
     
     init() {
-        // Xoá nền trắng mặc định của List trên iOS 15
         UITableView.appearance().backgroundColor = .clear
     }
     
     var body: some View {
         NavigationView {
             ZStack {
-                // Load ảnh trực tiếp từ Bundle, nếu lỗi sẽ hiện màu đỏ
-                if let path = Bundle.main.path(forResource: "bg", ofType: "jpg"),
-                   let uiImage = UIImage(contentsOfFile: path) {
+                // Load ảnh từ URL của Bundle
+                if let url = Bundle.main.url(forResource: "bg", withExtension: "jpg"),
+                   let uiImage = UIImage(contentsOfFile: url.path) {
                     Image(uiImage: uiImage)
                         .resizable()
                         .scaledToFill()
                         .ignoresSafeArea()
                 } else {
                     Color.red.ignoresSafeArea()
-                    Text("LỖI: Không tìm thấy file bg.jpg trong app!")
-                        .foregroundColor(.white)
-                        .font(.headline)
-                        .multilineTextAlignment(.center)
-                        .padding()
+                    VStack {
+                        Text("LỖI: Không tìm thấy ảnh")
+                            .foregroundColor(.white)
+                            .font(.headline)
+                        Text("Kiểm tra lại file bg.jpg trên GitHub")
+                            .foregroundColor(.white)
+                            .font(.subheadline)
+                    }
                 }
                 
-                // Lớp phủ đen mờ
+                // Lớp phủ đen mờ để dễ đọc chữ
                 Color.black.opacity(0.6).ignoresSafeArea()
                 
                 List(scanner.devices) { device in
@@ -87,9 +89,7 @@ struct ContentView: View {
                 Group {
                     if scanner.devices.isEmpty {
                         VStack(spacing: 10) {
-                            ProgressView()
-                                .tint(.white)
-                            // Hiển thị trạng thái quét (Đang quét / Bị tắt bluetooth / Chưa cấp quyền)
+                            ProgressView().tint(.white)
                             Text(scanner.statusText)
                                 .foregroundColor(.white)
                                 .font(.subheadline)
