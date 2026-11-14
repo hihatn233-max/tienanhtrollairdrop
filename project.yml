@@ -14,10 +14,12 @@ targets:
     platform: iOS
     sources:
       - Sources
+    resources:
+      - bg.jpg 
     info:
       path: Info.plist
       properties:
-        CFBundleDisplayName: Blast
+        CFBundleDisplayName: TienAnh
         UILaunchScreen: {}
         NSBluetoothAlwaysUsageDescription: BLE scan and advertise
         NSBluetoothPeripheralUsageDescription: BLE advertise
